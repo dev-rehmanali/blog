@@ -20,8 +20,11 @@ const Login = () => {
         .then(res => res.json())
         .then((data) => {
 
-            console.log(data); 
+            // console.log(data); 
             localStorage.setItem("token", data.token);
+            console.log(data.user);
+            localStorage.setItem("userId", data.user._id);
+            localStorage.setItem("userName", data.user.name);
             
             navigate('/');
         })

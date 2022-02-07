@@ -6,12 +6,14 @@ const BlogDetails = () => {
 
     const { id } = useParams();
     const [content, setContent ] = useState('');
+    const [commentContent, setCommentContent] = useState('');
     const history = useNavigate();
     const { data: blog, error, isPending } = useFetch('http://localhost:5000/api/posts/getSinglePost/' + id);
+    const {data: commentsList, isPending: isListPending,error: commentError} = useFetch('http://localhost:5000/api/comments/getCommentsByPost/' + id);
     // if (blog && blog.data && blog.data.length > 0) {
         // setContent(blog.data[0].bodyContent);
     // }
-
+    // console.log(commentsList[0].content);
     useEffect( () => {
         setContent(blog && blog.data && blog.data.length > 0 && blog.data[0].bodyContent);
     },[blog])
@@ -34,8 +36,7 @@ const BlogDetails = () => {
     }
 
     const handleEditClick = (e) => {
-        // const data = "latest"
-        console.log(content);
+
         fetch('http://localhost:5000/api/posts/updatePost', 
         { 
             
@@ -53,6 +54,33 @@ const BlogDetails = () => {
         })
     }
 
+    const handlePostComment = (e) => {
+
+        console.log(commentContent);
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+        const postId = id;
+        const content = commentContent;
+        fetch('http://localhost:5000/api/comments/postComment', 
+        { 
+            
+            method: 'post',
+            headers:
+            {
+                "Content-Type": "application/json",
+                'Authorization': localStorage.getItem("token"),
+            },
+            body: JSON.stringify({content, userName, userId, postId })
+        }).then((res) => {
+            res.json();
+        }).then(() => {
+            history('/');
+        })
+        console.log("Clicked Comment Button");
+
+
+    }
+
     return(
         <div className='blog-details'>
             {isPending && <div>Loading...</div>}
@@ -67,11 +95,28 @@ const BlogDetails = () => {
                 onChange={e => {setContent(e.target.value)}}
                 />
                 <div className='comments'>
-                    <input 
-                    placeholder='Post comment here'
-                    type={"text"} 
-                    />
-                    <button>Post</button>
+                    <div className='list'>
+
+                        <ul className='comments-list'>
+                            {commentsList && commentsList.length > 0 && commentsList.map(comment => { return ( 
+                                <div className='lidiv' key={ comment._id }>
+                                    <li className='every-comment' > <h4>{comment.commentedBy}</h4> { comment.content } </li>
+                                </div>)
+                                
+                            }) }
+                        </ul>
+                    </div>
+                    <div>
+                        <input 
+                        placeholder='Post comment here'
+                        type={"text"} 
+                        onChange={e => { setCommentContent(e.target.value)} }
+                        />
+                        <button onClick={handlePostComment}>Post</button>
+
+
+
+                    </div>
 
                 </div>
                 <button onClick={handleDeleteClick}>Delete</button>

@@ -4,6 +4,7 @@ const LogOut = () => {
 
     const navigate = useNavigate();
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     sessionStorage.clear();
     // navigate('/')
     return ( 
