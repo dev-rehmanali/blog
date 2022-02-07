@@ -7,15 +7,16 @@ const BlogDetails = () => {
     const { id } = useParams();
     const [content, setContent ] = useState('');
     const [commentContent, setCommentContent] = useState('');
+    // const [ commentList, setCommentList ] = useState('');
+    const [ like, setLike ] = useState('Like');
     const history = useNavigate();
     const { data: blog, error, isPending } = useFetch('http://localhost:5000/api/posts/getSinglePost/' + id);
     const {data: commentsList, isPending: isListPending,error: commentError} = useFetch('http://localhost:5000/api/comments/getCommentsByPost/' + id);
-    // if (blog && blog.data && blog.data.length > 0) {
-        // setContent(blog.data[0].bodyContent);
-    // }
-    // console.log(commentsList[0].content);
+    
     useEffect( () => {
-        setContent(blog && blog.data && blog.data.length > 0 && blog.data[0].bodyContent);
+        setContent(blog && blog.data && blog.data.length > 0 && blog.data[0].bodyContent?blog.data[0].bodyContent:"");
+        // setCommentList(commentsList);
+
     },[blog])
 
     const handleDeleteClick = () => {
@@ -29,7 +30,6 @@ const BlogDetails = () => {
             },
         }).then((res) => {
             res.json();
-            // history('/');
         }).then((data) => {
             history('/');
         })
@@ -77,8 +77,54 @@ const BlogDetails = () => {
             history('/');
         })
         console.log("Clicked Comment Button");
+    }
 
+    const addLike = () => {
+        console.log("clicked");
+        if(like === 'Like')
+        {
+            const userId = localStorage.getItem('userId');
+            const liked = true;
+            const likePost = {userId, id, liked}
+            fetch('http://localhost:5000/api/likes/LikePost', 
+            { 
+                
+                method: 'post',
+                headers:
+                {
+                    "Content-Type": "application/json",
+                    'Authorization': localStorage.getItem("token"),
+                },
+                body: JSON.stringify({likePost})
+            }).then((res) => {
+                res.json();
+            }).then(() => {
+                // history('/');
+            })
+            setLike('UnLike');
+        }else
+        {
+            const userId = localStorage.getItem('userId');
+            const liked = true;
+            const likePost = {userId, id, liked}
+            fetch('http://localhost:5000/api/likes/unLikePost', 
+            { 
+                
+                method: 'put',
+                headers:
+                {
+                    "Content-Type": "application/json",
+                    'Authorization': localStorage.getItem("token"),
+                },
+                body: JSON.stringify({likePost})
+            }).then((res) => {
+                res.json();
+            }).then(() => {
+                // history('/');
+            })
 
+            setLike('Like');
+        }
     }
 
     return(
@@ -88,12 +134,15 @@ const BlogDetails = () => {
             {blog && blog.data && blog.data.length > 0 &&
             
             <article>
+                <div>
                 <h2>{blog.data[0].title}</h2>
                 <p>Written by {blog.data[0].author}</p>
                 <textarea 
                 value={content }
                 onChange={e => {setContent(e.target.value)}}
                 />
+                <button onClick={addLike} >{like}</button>
+                </div>
                 <div className='comments'>
                     <div className='list'>
 

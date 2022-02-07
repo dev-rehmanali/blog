@@ -8,7 +8,7 @@ const useFetch = (url) => {
     useEffect(() => {
         const abortCont = new AbortController();
 
-        setTimeout(() => {
+        // setTimeout(() => {
             fetch(
                 url, 
                 { 
@@ -45,7 +45,7 @@ const useFetch = (url) => {
                     setIsPending(false);
                 }
             })
-        }, 5);
+        // }, 5);
 
         return () => abortCont.abort();
     }, [url]);
