@@ -66,7 +66,14 @@ const BlogDetails = () => {
                 value={content }
                 onChange={e => {setContent(e.target.value)}}
                 />
-                <label type={"text"} value={"small"}/>
+                <div className='comments'>
+                    <input 
+                    placeholder='Post comment here'
+                    type={"text"} 
+                    />
+                    <button>Post</button>
+
+                </div>
                 <button onClick={handleDeleteClick}>Delete</button>
                 <button onClick={handleEditClick}>Update</button>
             </article>
